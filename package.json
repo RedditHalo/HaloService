@@ -1,0 +1,16 @@
+{
+  "name": "halo-service",
+  "version": "1.0.0",
+  "description": "This service provides and process halo requests for the RedditHalo platform.",
+  "main": "index.js",
+  "scripts": {
+    "create-stack": "$Env:STACK_NAME=\"halo-service\" & $Env:S3_BUCKET_NAME=\"halo-service-S3\" & bash ./bin/create.sh",
+    "delete-stack": "setx $(cat config.env | xargs) && ./bin/delete.sh",
+    "update-stack": "setx $(cat config.env | xargs) && ./bin/update.sh"
+  },
+  "author": "RedditHalo",
+  "license": "MIT",
+  "dependencies": {
+    "snoowrap": "^1.21.0"
+  }
+}
