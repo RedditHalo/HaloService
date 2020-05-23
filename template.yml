@@ -1,0 +1,58 @@
+  
+Description: >
+  AWS Lambda Nodejs Starter project.
+  To add a new function define the function role and the function itself following
+  the template of FooFunction.
+Parameters:
+  AddHaloVersion:
+    Description: "Version of the lambda function required to update existing stack"
+    Type: String
+    Default: "latest"
+
+  S3BucketName:
+    Description: "S3BucketName"
+    Type: "String"
+
+Resources:
+  LambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        -
+          PolicyName: "LambdaRolePolicy"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              Resource: "*"
+
+  AddHalo:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        S3Bucket: !Ref S3BucketName
+        S3Key: !Sub AddHalo-${AddHaloVersion}.zip
+      Description: Lambda function that schedules updates
+      Environment:
+        Variables:
+          NODE_ENV: production
+      FunctionName: AddHalo
+      Handler: "index.handler"
+      MemorySize: 128
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: "nodejs12.x"
+      Timeout: 100

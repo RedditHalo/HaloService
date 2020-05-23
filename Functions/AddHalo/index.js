@@ -12,21 +12,14 @@ const reddit = new snoowrap({
     password: process.env.PASSWORD
 });
 
-exports.handler = async (event, context, callback) => {
-    //var request = JSON.parse(event.body);
-    var request = event.body
-
-    if (!validateRequest(request)) {
+exports.handler = async (body, context, callback) => {
+    if (!validateRequest(body)) {
         return "Invalid body.";
     }
 
-    console.log(request.commentId)
-
-    const commentId = request.commentId;
+    const commentId = body.commentId;
     const comment = await reddit.getComment(commentId).fetch();
     const parent = await getParent(comment);
-
-
 };
 
 async function getParent(comment) {
