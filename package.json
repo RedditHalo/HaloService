@@ -11,6 +11,7 @@
   "author": "RedditHalo",
   "license": "MIT",
   "dependencies": {
+    "node": "^14.2.0",
     "snoowrap": "^1.21.0"
   }
 }
