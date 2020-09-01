@@ -20,28 +20,24 @@ Resources:
       Name: "HaloApi"
       Description: "Main API for working with halos"
 
-  HaloApiAddHaloMethod:
+  HaloApiRootMethod:
     Type: "AWS::ApiGateway::Method"
     Properties:
       AuthorizationType: "NONE"
-      HttpMethod: "POST"
+      HttpMethod: "ANY"
+      RequestParameters:
+        method.request.querystring.id: false
+        method.request.querystring.initiator: false
+        method.request.querystring.recipient: false
+        method.request.querystring.subreddit: false
       Integration:
         IntegrationHttpMethod: "POST"
         Type: "AWS_PROXY"
-        Uri: !Sub
-          - "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations"
-          - lambdaArn: !GetAtt "HaloLambda.Arn"
-      ResourceId: !GetAtt "HaloApi.RootResourceId"
-      RestApiId: !Ref "HaloApi"
-
-  HaloApiGetHalosMethod:
-    Type: "AWS::ApiGateway::Method"
-    Properties:
-      AuthorizationType: "NONE"
-      HttpMethod: "GET"
-      Integration:
-        IntegrationHttpMethod: "GET"
-        Type: "AWS"
+        RequestParameters:
+          integration.request.querystring.id: method.request.querystring.id
+          integration.request.querystring.initiator: method.request.querystring.initiator
+          integration.request.querystring.recipient: method.request.querystring.recipient
+          integration.request.querystring.subreddit: method.request.querystring.subreddit
         Uri: !Sub
           - "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations"
           - lambdaArn: !GetAtt "HaloLambda.Arn"
@@ -51,8 +47,7 @@ Resources:
   HaloApiDeployment:
     Type: "AWS::ApiGateway::Deployment"
     DependsOn:
-      - "HaloApiAddHaloMethod"
-      - "HaloApiGetHalosMethod"
+      - "HaloApiRootMethod"
     Properties:
       RestApiId: !Ref "HaloApi"
       StageName: "Production"
@@ -89,7 +84,6 @@ Resources:
               - dynamodb:Query
               - dynamodb:Scan
               Resource: "*"
-
 
   HaloLambda:
     Type: "AWS::Lambda::Function"
